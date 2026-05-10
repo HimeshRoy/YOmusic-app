@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { MusicProvider } from "./context/MusicContext";
-
+import "virtual:pwa-register";
 import App from "./App";
 
 import "./index.css";
