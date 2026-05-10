@@ -1,17 +1,42 @@
-import { FaPlay, FaPause, FaForward, FaBackward } from "react-icons/fa";
+import {
+  FaPlay,
+  FaPause,
+  FaForward,
+  FaBackward,
+  FaRandom,
+  FaListUl,
+} from "react-icons/fa";
 
-import { motion } from "framer-motion";
+import {
+  RiRepeat2Fill,
+} from "react-icons/ri";
 
-import { HiSpeakerWave } from "react-icons/hi2";
+import {
+  motion,
+} from "framer-motion";
 
-import { useState } from "react";
+import {
+  HiSpeakerWave,
+} from "react-icons/hi2";
 
-import { usePlayer } from "../../context/PlayerContext";
+import {
+  useState,
+} from "react";
 
-import FullscreenPlayer from "../player/FullscreenPlayer";
+import {
+  usePlayer,
+} from "../../context/PlayerContext";
+
+import FullscreenPlayer
+from "../player/FullscreenPlayer";
+
+import QueuePanel
+from "../player/QueuePanel";
 
 const Player = () => {
+
   const {
+
     currentSong,
 
     isPlaying,
@@ -29,34 +54,82 @@ const Player = () => {
 
     nextSong,
     prevSong,
+
+    isShuffle,
+    setIsShuffle,
+
+    loopMode,
+    setLoopMode,
+
   } = usePlayer();
 
-  const [open, setOpen] = useState(false);
+  const [open,
+    setOpen] =
+    useState(false);
 
-  if (!isReady || !currentSong) return null;
+  const [queueOpen,
+    setQueueOpen] =
+    useState(false);
+
+  // NO PLAYER
+  if (
+    !isReady ||
+    !currentSong
+  ) return null;
 
   // FORMAT TIME
-  const formatTime = (time) => {
-    if (!time || isNaN(time)) return "0:00";
+  const formatTime =
+    (time) => {
 
-    const minutes = Math.floor(time / 60);
+    if (
+      !time ||
+      isNaN(time)
+    ) return "0:00";
 
-    const seconds = Math.floor(time % 60);
+    const minutes =
+      Math.floor(time / 60);
 
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    const seconds =
+      Math.floor(time % 60);
+
+    return `
+      ${minutes}:
+      ${seconds < 10 ? "0" : ""}
+      ${seconds}
+    `;
+
   };
 
   return (
+
     <>
-      {/* FULLSCREEN PLAYER */}
-      <FullscreenPlayer open={open} setOpen={setOpen} />
+
+      {/* FULLSCREEN */}
+      <FullscreenPlayer
+
+        open={open}
+
+        setOpen={setOpen}
+
+      />
+
+      {/* QUEUE */}
+      <QueuePanel
+
+        open={queueOpen}
+
+        setOpen={setQueueOpen}
+
+      />
 
       {/* MINI PLAYER */}
       <div
         className="
           fixed
+
           bottom-[70px]
           md:bottom-0
+
           left-0
 
           w-full
@@ -81,9 +154,14 @@ const Player = () => {
           z-50
         "
       >
+
         {/* LEFT */}
         <div
-          onClick={() => setOpen(true)}
+
+          onClick={() =>
+            setOpen(true)
+          }
+
           className="
             flex
             items-center
@@ -99,17 +177,29 @@ const Player = () => {
             cursor-pointer
           "
         >
+
           <motion.img
+
             animate={{
-              y: isPlaying ? [0, -2, 0] : 0,
+              y:
+                isPlaying
+                  ? [0, -2, 0]
+                  : 0,
             }}
+
             transition={{
               duration: 2.5,
 
               repeat: Infinity,
             }}
-            src={currentSong.image[2].url}
+
+            src={
+              currentSong
+                .image[2].url
+            }
+
             alt=""
+
             className="
               w-10
               h-10
@@ -123,9 +213,14 @@ const Player = () => {
 
               shrink-0
             "
-          ></motion.img>
+          />
 
-          <div className="min-w-0">
+          <div
+            className="
+              min-w-0
+            "
+          >
+
             <h3
               className="
                 font-semibold
@@ -149,9 +244,15 @@ const Player = () => {
                 truncate
               "
             >
-              {currentSong.artists.primary[0]?.name}
+              {
+                currentSong
+                  .artists
+                  .primary[0]?.name
+              }
             </p>
+
           </div>
+
         </div>
 
         {/* CENTER */}
@@ -169,6 +270,7 @@ const Player = () => {
             sm:px-4
           "
         >
+
           {/* CONTROLS */}
           <div
             className="
@@ -181,9 +283,12 @@ const Player = () => {
               mb-1
             "
           >
-            {/* PREV */}
+
+            {/* PREVIOUS */}
             <button
+
               onClick={prevSong}
+
               className="
                 text-zinc-400
                 hover:text-white
@@ -194,18 +299,61 @@ const Player = () => {
                 sm:text-base
               "
             >
+
               <FaBackward />
+
+            </button>
+
+            {/* SHUFFLE */}
+            <button
+
+              onClick={() =>
+
+                setIsShuffle(
+                  !isShuffle
+                )
+
+              }
+
+              className={`
+                transition-all
+
+                text-xs
+                sm:text-base
+
+                ${
+                  isShuffle
+
+                    ? "text-green-500"
+
+                    : "text-zinc-400"
+                }
+              `}
+            >
+
+              <FaRandom />
+
             </button>
 
             {/* PLAY */}
             <motion.button
+
               whileTap={{
                 scale: 0.82,
               }}
+
               whileHover={{
                 scale: 1.08,
               }}
-              onClick={() => setIsPlaying(!isPlaying)}
+
+              onClick={() =>
+
+                setIsPlaying(
+                  !isPlaying
+                )
+
+              }
+
               className="
                 bg-white
                 text-black
@@ -219,28 +367,89 @@ const Player = () => {
                 active:scale-95
 
                 transition-all
+
+                shadow-xl
               "
             >
+
               {isPlaying ? (
+
                 <FaPause
                   className="
                     text-xs
                     sm:text-base
                   "
                 />
+
               ) : (
+
                 <FaPlay
                   className="
                     text-xs
                     sm:text-base
                   "
                 />
+
               )}
+
             </motion.button>
 
-            {/* NEXT */}
+            {/* LOOP */}
             <button
-              onClick={nextSong}
+
+              onClick={() => {
+
+                if (
+                  loopMode === "off"
+                ) {
+
+                  setLoopMode("all");
+
+                }
+
+                else if (
+                  loopMode === "all"
+                ) {
+
+                  setLoopMode("one");
+
+                }
+
+                else {
+
+                  setLoopMode("off");
+
+                }
+
+              }}
+
+              className={`
+                transition-all
+
+                text-xs
+                sm:text-base
+
+                ${
+                  loopMode !== "off"
+
+                    ? "text-green-500"
+
+                    : "text-zinc-400"
+                }
+              `}
+            >
+
+              <RiRepeat2Fill />
+
+            </button>
+
+            {/* QUEUE */}
+            <button
+
+              onClick={() =>
+                setQueueOpen(true)
+              }
+
               className="
                 text-zinc-400
                 hover:text-white
@@ -251,8 +460,31 @@ const Player = () => {
                 sm:text-base
               "
             >
-              <FaForward />
+
+              <FaListUl />
+
             </button>
+
+            {/* NEXT */}
+            <button
+
+              onClick={nextSong}
+
+              className="
+                text-zinc-400
+                hover:text-white
+
+                transition-all
+
+                text-xs
+                sm:text-base
+              "
+            >
+
+              <FaForward />
+
+            </button>
+
           </div>
 
           {/* PROGRESS */}
@@ -266,7 +498,8 @@ const Player = () => {
               w-full
             "
           >
-            {/* CURRENT */}
+
+            {/* CURRENT TIME */}
             <span
               className="
                 text-[9px]
@@ -278,16 +511,36 @@ const Player = () => {
                 sm:w-[40px]
               "
             >
-              {formatTime(currentTime)}
+
+              {
+                formatTime(
+                  currentTime
+                )
+              }
+
             </span>
 
-            {/* RANGE */}
+            {/* SEEK BAR */}
             <input
+
               type="range"
+
               min="0"
+
               max={duration || 0}
+
               value={currentTime}
-              onChange={(e) => seekSong(Number(e.target.value))}
+
+              onChange={(e) =>
+
+                seekSong(
+                  Number(
+                    e.target.value
+                  )
+                )
+
+              }
+
               className="
                 flex-1
 
@@ -312,9 +565,17 @@ const Player = () => {
                 sm:w-[40px]
               "
             >
-              {formatTime(duration)}
+
+              {
+                formatTime(
+                  duration
+                )
+              }
+
             </span>
+
           </div>
+
         </div>
 
         {/* RIGHT */}
@@ -331,6 +592,7 @@ const Player = () => {
             justify-end
           "
         >
+
           <HiSpeakerWave
             className="
               text-lg
@@ -339,12 +601,27 @@ const Player = () => {
           />
 
           <input
+
             type="range"
+
             min="0"
+
             max="1"
+
             step="0.01"
+
             value={volume}
-            onChange={(e) => setVolume(Number(e.target.value))}
+
+            onChange={(e) =>
+
+              setVolume(
+                Number(
+                  e.target.value
+                )
+              )
+
+            }
+
             className="
               accent-green-500
 
@@ -353,10 +630,15 @@ const Player = () => {
               h-[2px]
             "
           />
+
         </div>
+
       </div>
+
     </>
+
   );
+
 };
 
 export default Player;
