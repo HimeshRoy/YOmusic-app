@@ -2,7 +2,7 @@ import { SiNeteasecloudmusic } from "react-icons/si";
 import { GoHomeFill } from "react-icons/go";
 import { IoSearch } from "react-icons/io5";
 import { FaHeart } from "react-icons/fa";
-
+import { FaUserAlt } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
 const Sidebar = () => {
@@ -181,6 +181,29 @@ const Sidebar = () => {
             <FaHeart size={22} />
 
             <span className="font-medium">Favorites</span>
+          </NavLink>
+
+          <NavLink
+            to="/library"
+            className={({ isActive }) => `
+    flex
+    items-center
+    gap-4
+    px-4
+    py-3
+    rounded-xl
+    transition-all
+    duration-300
+
+    ${
+      isActive
+        ? "bg-zinc-900 text-green-500"
+        : "text-zinc-300 hover:bg-zinc-900 hover:text-green-500"
+    }
+  `}
+          >
+            <FaUserAlt size={20} />
+            Library
           </NavLink>
         </div>
       </div>
@@ -378,6 +401,29 @@ const Sidebar = () => {
               </span>
             </div>
           )}
+        </NavLink>
+        <NavLink
+          to="/library"
+          className={({ isActive }) => `
+    flex
+    flex-col
+    items-center
+
+    transition-all
+
+    ${isActive ? "text-green-500" : "text-zinc-300"}
+  `}
+        >
+          <FaUserAlt size={22} />
+
+          <span
+            className="
+      text-xs
+      mt-1
+    "
+          >
+            Library
+          </span>
         </NavLink>
       </div>
     </>

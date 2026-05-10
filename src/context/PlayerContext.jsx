@@ -31,6 +31,10 @@ export const PlayerProvider = ({ children }) => {
 
   const [audioLoaded, setAudioLoaded] = useState(false);
 
+  const [recentlyPlayed, setRecentlyPlayed] = useState(
+    JSON.parse(localStorage.getItem("yomusic-recently-played")) || [],
+  );
+
   // RESTORE PLAYER
   useEffect(() => {
     const savedPlayer = JSON.parse(localStorage.getItem("yomusic-player"));
@@ -117,6 +121,24 @@ export const PlayerProvider = ({ children }) => {
     setCurrentTime(0);
 
     setIsPlaying(true);
+  };
+
+  const addToRecentlyPlayed = (song) => {
+    if (!song) return;
+
+    const updated = [
+      song,
+
+      ...recentlyPlayed.filter((item) => item.id !== song.id),
+    ].slice(0, 20);
+
+    setRecentlyPlayed(updated);
+
+    localStorage.setItem(
+      "yomusic-recently-played",
+
+      JSON.stringify(updated),
+    );
   };
 
   // LOAD SONG
@@ -222,6 +244,8 @@ export const PlayerProvider = ({ children }) => {
 
       setIsPlaying(true);
 
+      addToRecentlyPlayed(song);
+
       return;
     }
 
@@ -232,6 +256,7 @@ export const PlayerProvider = ({ children }) => {
       setCurrentIndex(currentIndex + 1);
 
       setCurrentSong(next);
+      addToRecentlyPlayed(next);
 
       setCurrentTime(0);
 
@@ -259,6 +284,8 @@ export const PlayerProvider = ({ children }) => {
 
       setCurrentSong(prev);
 
+      addToRecentlyPlayed(prev);
+
       setCurrentTime(0);
 
       setIsPlaying(true);
@@ -270,6 +297,8 @@ export const PlayerProvider = ({ children }) => {
     setCurrentIndex(index);
 
     setCurrentSong(songs[index]);
+
+    addToRecentlyPlayed(songs[index]);
 
     setCurrentTime(0);
 
@@ -339,6 +368,8 @@ export const PlayerProvider = ({ children }) => {
 
         nextSong,
         prevSong,
+
+        recentlyPlayed,
 
         playFromQueue,
 
