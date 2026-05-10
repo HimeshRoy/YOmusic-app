@@ -1,20 +1,31 @@
 import axios from "axios";
 
-const BASE_URL = "https://saavn.sumit.co/api";
+const BASE_URL =
+  "https://saavn.sumit.co/api";
 
-export const searchMusic = async (query) => {
+export const searchMusic =
+async (query) => {
 
   try {
 
-    const response = await axios.get(
-      `${BASE_URL}/search/songs?query=${query}`
-    );
+    const response =
+      await axios.get(
 
-    return response.data.data.results;
+        `${BASE_URL}/search/songs?query=${encodeURIComponent(query)}`
+
+      );
+
+    return (
+      response.data
+        ?.data
+        ?.results || []
+    );
 
   } catch (error) {
 
     console.log(error);
+
+    return [];
 
   }
 

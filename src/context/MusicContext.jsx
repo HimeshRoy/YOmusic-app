@@ -18,7 +18,7 @@ export const MusicProvider =
 }) => {
 
   const [query, setQuery] =
-    useState("lanadelrey");
+    useState(["lana del rey", "the weekend", "billie eilish"]);
 
   // GLOBAL SEARCH STATE
   const [search,

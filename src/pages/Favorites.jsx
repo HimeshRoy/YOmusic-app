@@ -60,7 +60,7 @@ const Favorites = () => {
           sm:p-6
           md:p-8
 
-          bg-gradient-to-br
+          bg-linear-to-br
           from-pink-500
           via-rose-500
           to-black
