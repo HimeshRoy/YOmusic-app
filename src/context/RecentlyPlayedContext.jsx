@@ -19,16 +19,16 @@ import {
   useAuth,
 } from "./AuthContext";
 
-const FavoritesContext =
+const RecentlyPlayedContext =
   createContext();
 
-export const FavoritesProvider =
+export const RecentlyPlayedProvider =
 ({
   children,
 }) => {
 
-  const [favorites,
-    setFavorites] =
+  const [recentlyPlayed,
+    setRecentlyPlayed] =
     useState([]);
 
   const [loading,
@@ -38,17 +38,17 @@ export const FavoritesProvider =
   const { user } =
     useAuth();
 
-  // LOAD FAVORITES
+  // LOAD
   useEffect(() => {
 
-    const loadFavorites =
+    const loadRecentlyPlayed =
       async () => {
 
       try {
 
         if (!user) {
 
-          setFavorites([]);
+          setRecentlyPlayed([]);
 
           setLoading(false);
 
@@ -73,13 +73,12 @@ export const FavoritesProvider =
           const data =
             snapshot.data();
 
-          setFavorites(
-            data.favorites || []
+          setRecentlyPlayed(
+
+            data.recentlyPlayed
+            || []
+
           );
-
-        } else {
-
-          setFavorites([]);
 
         }
 
@@ -95,13 +94,13 @@ export const FavoritesProvider =
 
     };
 
-    loadFavorites();
+    loadRecentlyPlayed();
 
   }, [user]);
 
-  // SAVE FAVORITES
-  const saveFavorites =
-    async (updatedFavorites) => {
+  // SAVE
+  const saveRecentlyPlayed =
+    async (updatedSongs) => {
 
     try {
 
@@ -116,8 +115,8 @@ export const FavoritesProvider =
         ),
 
         {
-          favorites:
-            updatedFavorites,
+          recentlyPlayed:
+            updatedSongs,
         },
 
         { merge: true }
@@ -132,82 +131,59 @@ export const FavoritesProvider =
 
   };
 
-  // TOGGLE FAVORITE
-  const toggleFavorite =
+  // ADD SONG
+  const addRecentlyPlayed =
     async (song) => {
 
-    const exists =
-      favorites.find(
+    const filtered =
+
+      recentlyPlayed.filter(
         (item) =>
-          item.id === song.id
+          item.id !== song.id
       );
 
-    let updatedFavorites;
+    const updatedSongs = [
 
-    if (exists) {
+      song,
 
-      updatedFavorites =
-        favorites.filter(
-          (item) =>
-            item.id !== song.id
-        );
+      ...filtered,
 
-    } else {
+    ].slice(0, 30);
 
-      updatedFavorites = [
-        ...favorites,
-        song,
-      ];
-
-    }
-
-    // UPDATE UI
-    setFavorites(
-      updatedFavorites
+    setRecentlyPlayed(
+      updatedSongs
     );
 
-    // SAVE FIRESTORE
-    await saveFavorites(
-      updatedFavorites
-    );
-
-  };
-
-  // CHECK FAVORITE
-  const isFavorite =
-    (songId) => {
-
-    return favorites.some(
-      (item) =>
-        item.id === songId
+    await saveRecentlyPlayed(
+      updatedSongs
     );
 
   };
 
   return (
 
-    <FavoritesContext.Provider
+    <RecentlyPlayedContext.Provider
       value={{
 
-        favorites,
+        recentlyPlayed,
 
         loading,
 
-        toggleFavorite,
-
-        isFavorite,
+        addRecentlyPlayed,
 
       }}
     >
 
       {children}
 
-    </FavoritesContext.Provider>
+    </RecentlyPlayedContext.Provider>
 
   );
 
 };
 
-export const useFavorites =
+export const useRecentlyPlayed =
 () =>
-  useContext(FavoritesContext);
+  useContext(
+    RecentlyPlayedContext
+  );

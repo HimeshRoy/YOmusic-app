@@ -17,18 +17,22 @@ export const MusicProvider =
   children,
 }) => {
 
-  const [query, setQuery] =
-    useState(["lana del rey", "the weekend", "billie eilish"]);
+  // ACTIVE QUERY
+  const [query,
+    setQuery] =
+    useState("lana del rey");
 
-  // GLOBAL SEARCH STATE
+  // INPUT SEARCH STATE
   const [search,
     setSearch] =
     useState("");
 
-  const [songs, setSongs] =
+  const [songs,
+    setSongs] =
     useState([]);
 
-  const [loading, setLoading] =
+  const [loading,
+    setLoading] =
     useState(false);
 
   // RECENT SEARCHES
@@ -37,9 +41,11 @@ export const MusicProvider =
     useState(
 
       JSON.parse(
+
         localStorage.getItem(
           "yomusic-recent"
         )
+
       ) || []
 
     );
@@ -75,7 +81,7 @@ export const MusicProvider =
 
   }, [query]);
 
-  // SAVE RECENT
+  // SAVE RECENT SEARCH
   const saveRecentSearch =
     (searchTerm) => {
 
@@ -108,13 +114,12 @@ export const MusicProvider =
   const handleSearch =
     (searchTerm) => {
 
-    setSearch(
-      searchTerm
-    );
+    if (!searchTerm.trim())
+      return;
 
-    setQuery(
-      searchTerm
-    );
+    setSearch(searchTerm);
+
+    setQuery(searchTerm);
 
     saveRecentSearch(
       searchTerm
@@ -130,7 +135,6 @@ export const MusicProvider =
         query,
         setQuery,
 
-        // GLOBAL SEARCH
         search,
         setSearch,
 

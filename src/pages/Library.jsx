@@ -1,444 +1,769 @@
-import {
-  motion,
-} from "framer-motion";
-
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import {
   FaClock,
   FaHeart,
   FaMusic,
   FaHeadphones,
+  FaListUl,
+  FaPlus,
+  FaChartBar,
 } from "react-icons/fa";
 
-import SongCard
-from "../components/music/SongCard";
+import { useState } from "react";
 
-import {
-  usePlayer,
-} from "../context/PlayerContext";
+import SongCard from "../components/music/SongCard";
 
-import {
-  useFavorites,
-} from "../context/FavoritesContext";
+import CreatePlaylistModal from "../components/playlist/CreatePlaylistModal";
+
+import { usePlayer } from "../context/PlayerContext";
+
+import { useFavorites } from "../context/FavoritesContext";
+
+import { usePlaylists } from "../context/PlaylistContext";
 
 const Library = () => {
+  const { recentlyPlayed } = usePlayer();
 
-  const {
+  const { favorites } = useFavorites();
 
-    recentlyPlayed,
+  const { playlists } = usePlaylists();
 
-  } = usePlayer();
+  const [open, setOpen] = useState(false);
 
-  const {
-
-    favorites,
-
-  } = useFavorites();
+  const navigate = useNavigate();
 
   // TOTAL LISTENS
-  const totalListens =
-    recentlyPlayed.length;
+  const totalListens = recentlyPlayed.length;
 
   // UNIQUE ARTISTS
-  const artists =
-    [
-      ...new Set(
+  const artists = [
+    ...new Set(recentlyPlayed.map((song) => song.artists.primary[0]?.name)),
+  ];
 
-        recentlyPlayed.map(
-          (song) =>
+  const topArtists = Object.values(
+    recentlyPlayed.reduce((acc, song) => {
+      const artist = song.artists.primary[0];
 
-            song.artists
-              .primary[0]?.name
+      if (!artist) return acc;
 
-        )
+      if (!acc[artist.name]) {
+        acc[artist.name] = {
+          ...artist,
 
-      ),
-    ];
+          count: 0,
+
+          image: song.image[2].url,
+        };
+      }
+
+      acc[artist.name].count += 1;
+
+      return acc;
+    }, {}),
+  )
+
+    .sort((a, b) => b.count - a.count)
+
+    .slice(0, 6);
 
   return (
+    <>
+      {/* MODAL */}
+      <CreatePlaylistModal open={open} setOpen={setOpen} />
 
-    <motion.div
-
-      initial={{
-        opacity: 0,
-        y: 20,
-      }}
-
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-
-      className="
-        space-y-8
-      "
-    >
-
-      {/* HERO */}
-      <div
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 20,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
         className="
-          relative
-
-          overflow-hidden
-
-          rounded-3xl
-
-          p-6
-          md:p-8
-
-          bg-gradient-to-br
-          from-green-500
-          via-emerald-500
-          to-black
+          space-y-8
+          pb-28
         "
       >
-
-        {/* GLOW */}
-        <div
-          className="
-            absolute
-
-            -top-20
-            -right-20
-
-            w-72
-            h-72
-
-            bg-white/10
-
-            rounded-full
-
-            blur-3xl
-          "
-        />
-
+        {/* HERO */}
         <div
           className="
             relative
-            z-10
+
+            overflow-hidden
+
+            rounded-3xl
+
+            p-6
+            md:p-8
+
+            bg-gradient-to-br
+            from-green-500
+            via-emerald-500
+            to-black
           "
         >
-
-          <p
+          {/* GLOW */}
+          <div
             className="
-              text-white/70
+              absolute
 
-              text-sm
-            "
-          >
-            Your Music Space
-          </p>
+              -top-20
+              -right-20
 
-          <h1
-            className="
-              text-4xl
-              md:text-6xl
+              w-72
+              h-72
 
-              font-black
+              bg-white/10
 
-              mt-2
-            "
-          >
-            Library 👤
-          </h1>
+              rounded-full
 
-          <p
-            className="
-              mt-4
-
-              text-white/80
-
-              max-w-[500px]
-            "
-          >
-            Your personal music universe.
-          </p>
-
-        </div>
-
-      </div>
-
-      {/* STATS */}
-      <div
-        className="
-          grid
-
-          grid-cols-2
-          md:grid-cols-4
-
-          gap-4
-        "
-      >
-
-        {/* RECENT */}
-        <div
-          className="
-            bg-[#181818]
-
-            rounded-2xl
-
-            p-5
-
-            border
-            border-zinc-800
-          "
-        >
-
-          <FaClock
-            className="
-              text-green-500
-              text-2xl
+              blur-3xl
             "
           />
-
-          <h2
-            className="
-              text-3xl
-              font-bold
-
-              mt-4
-            "
-          >
-            {
-              recentlyPlayed.length
-            }
-          </h2>
-
-          <p
-            className="
-              text-zinc-400
-              mt-1
-            "
-          >
-            Recently Played
-          </p>
-
-        </div>
-
-        {/* FAVORITES */}
-        <div
-          className="
-            bg-[#181818]
-
-            rounded-2xl
-
-            p-5
-
-            border
-            border-zinc-800
-          "
-        >
-
-          <FaHeart
-            className="
-              text-pink-500
-              text-2xl
-            "
-          />
-
-          <h2
-            className="
-              text-3xl
-              font-bold
-
-              mt-4
-            "
-          >
-            {
-              favorites.length
-            }
-          </h2>
-
-          <p
-            className="
-              text-zinc-400
-              mt-1
-            "
-          >
-            Favorite Songs
-          </p>
-
-        </div>
-
-        {/* ARTISTS */}
-        <div
-          className="
-            bg-[#181818]
-
-            rounded-2xl
-
-            p-5
-
-            border
-            border-zinc-800
-          "
-        >
-
-          <FaMusic
-            className="
-              text-yellow-500
-              text-2xl
-            "
-          />
-
-          <h2
-            className="
-              text-3xl
-              font-bold
-
-              mt-4
-            "
-          >
-            {
-              artists.length
-            }
-          </h2>
-
-          <p
-            className="
-              text-zinc-400
-              mt-1
-            "
-          >
-            Artists Played
-          </p>
-
-        </div>
-
-        {/* LISTENS */}
-        <div
-          className="
-            bg-[#181818]
-
-            rounded-2xl
-
-            p-5
-
-            border
-            border-zinc-800
-          "
-        >
-
-          <FaHeadphones
-            className="
-              text-cyan-500
-              text-2xl
-            "
-          />
-
-          <h2
-            className="
-              text-3xl
-              font-bold
-
-              mt-4
-            "
-          >
-            {totalListens}
-          </h2>
-
-          <p
-            className="
-              text-zinc-400
-              mt-1
-            "
-          >
-            Total Plays
-          </p>
-
-        </div>
-
-      </div>
-
-      {/* RECENTLY PLAYED */}
-      <section>
-
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-
-            mb-5
-          "
-        >
-
-          <FaClock
-            className="
-              text-green-500
-            "
-          />
-
-          <h2
-            className="
-              text-2xl
-              font-bold
-            "
-          >
-            Recently Played
-          </h2>
-
-        </div>
-
-        {recentlyPlayed.length > 0 ? (
 
           <div
             className="
-              grid
-
-              grid-cols-3
-              sm:grid-cols-3
-              md:grid-cols-4
-              lg:grid-cols-5
-              xl:grid-cols-6
-
-              gap-3
-              sm:gap-5
+              relative
+              z-10
             "
           >
+            <p
+              className="
+                text-white/70
 
-            {recentlyPlayed.map(
-              (song, index) => (
+                text-sm
+              "
+            >
+              Your Music Space
+            </p>
 
-              <SongCard
+            <h1
+              className="
+                text-4xl
+                md:text-6xl
 
-                key={song.id}
+                font-black
 
-                song={song}
+                mt-2
+              "
+            >
+              Library
+            </h1>
 
-                index={index}
+            <p
+              className="
+                mt-4
 
-                songs={recentlyPlayed}
+                text-white/80
 
-              />
+                max-w-[500px]
+              "
+            >
+              Your personal music universe.
+            </p>
+          </div>
+        </div>
 
-            ))}
+        {/* STATS */}
+        <div
+          className="
+            grid
 
+            grid-cols-2
+            md:grid-cols-4
+
+            gap-4
+          "
+        >
+          {/* RECENT */}
+          <div
+            className="
+              bg-[#181818]
+
+              rounded-2xl
+
+              p-5
+
+              border
+              border-zinc-800
+            "
+          >
+            <FaClock
+              className="
+                text-green-500
+                text-2xl
+              "
+            />
+
+            <h2
+              className="
+                text-3xl
+                font-bold
+
+                mt-4
+              "
+            >
+              {recentlyPlayed.length}
+            </h2>
+
+            <p
+              className="
+                text-zinc-400
+                mt-1
+              "
+            >
+              Recently Played
+            </p>
           </div>
 
-        ) : (
+          {/* FAVORITES */}
+          <div
+            onClick={() => navigate(`/favorites`)}
+            className="
+              bg-[#181818]
 
+              rounded-2xl
+
+              p-5
+
+              border
+              border-zinc-800
+            "
+          >
+            <FaHeart
+              className="
+                text-pink-500
+                text-2xl
+              "
+            />
+
+            <h2
+              className="
+                text-3xl
+                font-bold
+
+                mt-4
+              "
+            >
+              {favorites.length}
+            </h2>
+
+            <p
+              className="
+                text-zinc-400
+                mt-1
+              "
+            >
+              Favorite Songs
+            </p>
+          </div>
+
+          {/* ARTISTS */}
           <div
             className="
-              h-[200px]
+              bg-[#181818]
 
+              rounded-2xl
+
+              p-5
+
+              border
+              border-zinc-800
+            "
+          >
+            <FaMusic
+              className="
+                text-yellow-500
+                text-2xl
+              "
+            />
+
+            <h2
+              className="
+                text-3xl
+                font-bold
+
+                mt-4
+              "
+            >
+              {artists.length}
+            </h2>
+
+            <p
+              className="
+                text-zinc-400
+                mt-1
+              "
+            >
+              Artists Played
+            </p>
+          </div>
+
+          {/* LISTENS */}
+          <div
+            className="
+              bg-[#181818]
+
+              rounded-2xl
+
+              p-5
+
+              border
+              border-zinc-800
+            "
+          >
+            <FaHeadphones
+              className="
+                text-cyan-500
+                text-2xl
+              "
+            />
+
+            <h2
+              className="
+                text-3xl
+                font-bold
+
+                mt-4
+              "
+            >
+              {totalListens}
+            </h2>
+
+            <p
+              className="
+                text-zinc-400
+                mt-1
+              "
+            >
+              Total Plays
+            </p>
+          </div>
+        </div>
+
+        {/* STATS */}
+        <div
+          onClick={() => navigate("/stats")}
+          className="
+    bg-[#181818]
+
+    rounded-2xl
+
+    p-5
+
+    border
+    border-zinc-800
+
+    hover:border-green-500/40
+
+    transition-all
+
+    cursor-pointer
+  "
+        >
+          <FaChartBar
+            className="
+      text-purple-500
+      text-2xl
+    "
+          />
+
+          <h2
+            className="
+      text-3xl
+      font-bold
+
+      mt-4
+    "
+          >
+            Stats
+          </h2>
+
+          <p
+            className="
+      text-zinc-400
+      mt-1
+    "
+          >
+            Listening Insights
+          </p>
+        </div>
+
+        {/* PLAYLISTS */}
+        <section>
+          {/* HEADER */}
+          <div
+            className="
               flex
               items-center
-              justify-center
+              justify-between
 
-              text-zinc-400
+              mb-5
             "
           >
-            No recently played songs yet.
+            <div
+              className="
+                flex
+                items-center
+                gap-3
+              "
+            >
+              <FaListUl
+                className="
+                  text-green-500
+                "
+              />
+
+              <h2
+                className="
+                  text-2xl
+                  font-bold
+                "
+              >
+                Your Playlists
+              </h2>
+            </div>
+
+            {/* CREATE */}
+            <button
+              onClick={() => setOpen(true)}
+              className="
+                bg-green-500
+                hover:bg-green-400
+
+                text-black
+
+                px-4
+                py-2
+
+                rounded-xl
+
+                flex
+                items-center
+                gap-2
+
+                font-semibold
+
+                transition-all
+              "
+            >
+              <FaPlus />
+              Create
+            </button>
           </div>
 
-        )}
+          {/* GRID */}
+          {playlists.length > 0 ? (
+            <div
+              className="
+                grid
 
-      </section>
+                grid-cols-2
+                sm:grid-cols-3
+                md:grid-cols-4
+                lg:grid-cols-5
 
-    </motion.div>
+                gap-4
+              "
+            >
+              {playlists.map((playlist) => (
+                <motion.div
+                  onClick={() => navigate(`/playlist/${playlist.id}`)}
+                  whileHover={{
+                    y: -5,
+                  }}
+                  key={playlist.id}
+                  className="
+                    bg-[#181818]
 
+                    rounded-2xl
+
+                    p-4
+
+                    border
+                    border-zinc-800
+
+                    hover:border-green-500/40
+
+                    transition-all
+
+                    cursor-pointer
+                  "
+                >
+                  {/* COVER */}
+                  <div
+                    className="
+                      aspect-square
+
+                      rounded-2xl
+
+                      bg-gradient-to-br
+                      from-green-500
+                      to-black
+
+                      flex
+                      items-center
+                      justify-center
+
+                      mb-4
+                    "
+                  >
+                    <FaListUl
+                      className="
+                        text-4xl
+                      "
+                    />
+                  </div>
+
+                  {/* INFO */}
+                  <h3
+                    className="
+                      font-bold
+
+                      truncate
+                    "
+                  >
+                    {playlist.name}
+                  </h3>
+
+                  <p
+                    className="
+                      text-zinc-400
+                      text-sm
+
+                      mt-1
+                    "
+                  >
+                    {playlist.songs.length} songs
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="
+                h-[180px]
+
+                flex
+                items-center
+                justify-center
+
+                rounded-3xl
+
+                border
+                border-dashed
+                border-zinc-700
+
+                text-zinc-400
+              "
+            >
+              No playlists created yet.
+            </div>
+          )}
+        </section>
+
+        {/* RECENTLY PLAYED */}
+        <section>
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+
+              mb-5
+            "
+          >
+            <FaClock
+              className="
+                text-green-500
+              "
+            />
+
+            <h2
+              className="
+                text-2xl
+                font-bold
+              "
+            >
+              Recently Played
+            </h2>
+          </div>
+
+          {recentlyPlayed.length > 0 ? (
+            <div
+              className="
+                grid
+
+                grid-cols-3
+                sm:grid-cols-3
+                md:grid-cols-4
+                lg:grid-cols-5
+                xl:grid-cols-6
+
+                gap-3
+                sm:gap-5
+              "
+            >
+              {recentlyPlayed.map((song, index) => (
+                <SongCard
+                  key={song.id}
+                  song={song}
+                  index={index}
+                  songs={recentlyPlayed}
+                />
+              ))}
+            </div>
+          ) : (
+            <div
+              className="
+                h-[200px]
+
+                flex
+                items-center
+                justify-center
+
+                text-zinc-400
+              "
+            >
+              No recently played songs yet.
+            </div>
+          )}
+        </section>
+
+        {/* TOP ARTISTS */}
+        <section>
+          {/* HEADER */}
+          <div
+            className="
+      flex
+      items-center
+      gap-3
+
+      mb-5
+    "
+          >
+            <FaMusic
+              className="
+        text-green-500
+      "
+            />
+
+            <h2
+              className="
+        text-2xl
+        font-bold
+      "
+            >
+              Top Artists
+            </h2>
+          </div>
+
+          {topArtists.length > 0 ? (
+            <div
+              className="
+        grid
+
+        grid-cols-2
+        sm:grid-cols-3
+        md:grid-cols-4
+        lg:grid-cols-6
+
+        gap-4
+      "
+            >
+              {topArtists.map((artist) => (
+                <motion.div
+                  whileHover={{
+                    y: -5,
+                  }}
+                  key={artist.name}
+                  className="
+            bg-[#181818]
+
+            border
+            border-zinc-800
+
+            rounded-3xl
+
+            p-4
+
+            text-center
+
+            hover:border-green-500/40
+
+            transition-all
+          "
+                >
+                  {/* IMAGE */}
+                  <img
+                    src={artist.image}
+                    alt=""
+                    className="
+              w-24
+              h-24
+
+              rounded-full
+
+              object-cover
+
+              mx-auto
+
+              mb-4
+            "
+                  />
+
+                  {/* NAME */}
+                  <h3
+                    className="
+              font-bold
+
+              truncate
+            "
+                  >
+                    {artist.name}
+                  </h3>
+
+                  {/* COUNT */}
+                  <p
+                    className="
+              text-zinc-400
+              text-sm
+
+              mt-1
+            "
+                  >
+                    {artist.count} plays
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="
+        h-[180px]
+
+        flex
+        items-center
+        justify-center
+
+        rounded-3xl
+
+        border
+        border-dashed
+        border-zinc-700
+
+        text-zinc-400
+      "
+            >
+              No artist activity yet.
+            </div>
+          )}
+        </section>
+      </motion.div>
+    </>
   );
-
 };
 
 export default Library;

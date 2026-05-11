@@ -10,8 +10,9 @@ import {
 import SongCard
 from "../components/music/SongCard";
 
-import { useFavorites }
-from "../context/FavoritesContext";
+import {
+  useFavorites,
+} from "../context/FavoritesContext";
 
 const Favorites = () => {
 
@@ -19,13 +20,36 @@ const Favorites = () => {
 
     favorites,
 
-    isReady,
+    loading,
 
   } = useFavorites();
 
-  // HYDRATION FIX
-  if (!isReady)
-    return null;
+  // LOADING
+  if (loading) {
+
+    return (
+
+      <div
+        className="
+          h-[70vh]
+
+          flex
+          items-center
+          justify-center
+
+          text-zinc-400
+
+          text-lg
+        "
+      >
+
+        Loading favorites...
+
+      </div>
+
+    );
+
+  }
 
   return (
 
@@ -212,7 +236,7 @@ const Favorites = () => {
             className="
               grid
 
-              grid-cols-3
+              grid-cols-2
               sm:grid-cols-3
               md:grid-cols-4
               lg:grid-cols-5
@@ -297,7 +321,7 @@ const Favorites = () => {
             className="
               text-zinc-400
 
-              max-w-112.5
+              max-w-[450px]
 
               text-sm
               sm:text-base

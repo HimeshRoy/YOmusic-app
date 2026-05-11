@@ -1,12 +1,148 @@
-import SongCard from "../components/music/SongCard";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import SongCard
+from "../components/music/SongCard";
 
 import SkeletonCard
 from "../components/music/SkeletonCard";
+
+import {
+  useFavorites,
+} from "../context/FavoritesContext";
+
+import {
+  useRecentlyPlayed,
+} from "../context/RecentlyPlayedContext";
+
+import {
+  searchMusic,
+} from "../services/musicApi";
 
 const Home = ({
   songs,
   loading,
 }) => {
+
+  const {
+
+    favorites,
+
+  } = useFavorites();
+
+  const {
+
+    recentlyPlayed,
+
+  } = useRecentlyPlayed();
+
+  // AI RECOMMENDATIONS
+  const [recommendedSongs,
+    setRecommendedSongs] =
+    useState([]);
+
+  const [topArtist,
+    setTopArtist] =
+    useState("");
+
+  // GET TOP ARTIST
+  useEffect(() => {
+
+    const allSongs = [
+
+      ...favorites,
+
+      ...recentlyPlayed,
+
+    ];
+
+    if (allSongs.length === 0)
+      return;
+
+    const artistMap = {};
+
+    allSongs.forEach(
+      (song) => {
+
+      const artist =
+
+        song.primaryArtists ||
+
+        song.artists?.primary?.[0]
+          ?.name;
+
+      if (!artist) return;
+
+      artistMap[artist] =
+
+        (artistMap[artist] || 0)
+        + 1;
+
+    });
+
+    const bestArtist =
+
+      Object.keys(
+        artistMap
+      ).reduce(
+
+        (a, b) =>
+
+          artistMap[a] >
+          artistMap[b]
+
+            ? a
+
+            : b
+
+      );
+
+    setTopArtist(
+      bestArtist
+    );
+
+  }, [
+
+    favorites,
+
+    recentlyPlayed,
+
+  ]);
+
+  // FETCH RECOMMENDATIONS
+  useEffect(() => {
+
+    const fetchRecommendations =
+      async () => {
+
+      if (!topArtist)
+        return;
+
+      try {
+
+        const data =
+
+          await searchMusic(
+            topArtist
+          );
+
+        setRecommendedSongs(
+          data || []
+        );
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+
+    };
+
+    fetchRecommendations();
+
+  }, [topArtist]);
 
   return (
 
@@ -127,6 +263,98 @@ const Home = ({
 
       </div>
 
+      {/* AI RECOMMENDATIONS */}
+      {recommendedSongs.length > 0 && (
+
+        <section>
+
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+
+              mb-5
+            "
+          >
+
+            <div>
+
+              <h2
+                className="
+                  text-xl
+                  sm:text-3xl
+
+                  font-bold
+                "
+              >
+                Recommended For You
+              </h2>
+
+              <p
+                className="
+                  text-zinc-400
+
+                  text-xs
+                  sm:text-base
+
+                  mt-1
+                "
+              >
+                Because you listen to
+                {" "}
+                {topArtist}
+              </p>
+
+            </div>
+
+          </div>
+
+          <div
+            className="
+              grid
+
+              grid-cols-3
+              sm:grid-cols-3
+              md:grid-cols-4
+              lg:grid-cols-5
+              xl:grid-cols-6
+
+              gap-3
+              sm:gap-5
+            "
+          >
+
+            {recommendedSongs
+              .slice(0, 12)
+              .map(
+                (
+                  song,
+                  index
+                ) => (
+
+                <SongCard
+
+                  key={song.id}
+
+                  song={song}
+
+                  index={index}
+
+                  songs={
+                    recommendedSongs
+                  }
+
+                />
+
+            ))}
+
+          </div>
+
+        </section>
+
+      )}
+
       {/* HEADING */}
       <div
         className="
@@ -164,17 +392,6 @@ const Home = ({
 
         </div>
 
-        <button
-          className="
-            hidden
-            sm:block
-
-            text-green-500
-          "
-        >
-          Show All
-        </button>
-
       </div>
 
       {/* SONG GRID */}
@@ -202,12 +419,15 @@ const Home = ({
               key={index}
             />
 
-          ))
+          )))
 
-        ) : (
+        : (
 
           songs?.map(
-            (song, index) => (
+            (
+              song,
+              index
+            ) => (
 
             <SongCard
 
@@ -221,9 +441,9 @@ const Home = ({
 
             />
 
-          ))
+          )))
 
-        )}
+        }
 
       </div>
 
