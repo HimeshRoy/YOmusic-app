@@ -486,7 +486,7 @@ const Navbar = () => {
                 rounded-full
 
                 border
-                border-green-500
+               border-transparent
 
                 object-cover
 
@@ -517,7 +517,7 @@ const Navbar = () => {
                   text-zinc-400
                 "
               >
-                Premium User
+                {user?.email}
               </p>
 
             </div>

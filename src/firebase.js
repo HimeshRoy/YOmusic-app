@@ -11,36 +11,53 @@ import {
     getFirestore,
 } from "firebase/firestore";
 
+// FIREBASE CONFIG
 const firebaseConfig = {
 
-    apiKey: "AIzaSyClBZcg3r_-wQW_Gw-Fjbp2y_-IcBoSbFM",
+    apiKey:
+        import.meta.env
+            .VITE_FIREBASE_API_KEY,
 
     authDomain:
-        "yomusic-2026.firebaseapp.com",
+        import.meta.env
+            .VITE_FIREBASE_AUTH_DOMAIN,
 
     projectId:
-        "yomusic-2026",
+        import.meta.env
+            .VITE_FIREBASE_PROJECT_ID,
 
     storageBucket:
-        "yomusic-2026.firebasestorage.app",
+        import.meta.env
+            .VITE_FIREBASE_STORAGE_BUCKET,
 
     messagingSenderId:
-        "726928278569",
+        import.meta.env
+            .VITE_FIREBASE_MESSAGING_SENDER_ID,
 
     appId:
-        "1:726928278569:web:4a995071194b8249fc4838",
-    measurementId: "G-WVGHHE733L",
+        import.meta.env
+            .VITE_FIREBASE_APP_ID,
+
+    measurementId:
+        import.meta.env
+            .VITE_FIREBASE_MEASUREMENT_ID,
 
 };
 
+// INITIALIZE
 const app =
-    initializeApp(firebaseConfig);
+    initializeApp(
+        firebaseConfig
+    );
 
+// AUTH
 export const auth =
     getAuth(app);
 
+// GOOGLE PROVIDER
 export const googleProvider =
     new GoogleAuthProvider();
 
+// FIRESTORE
 export const db =
     getFirestore(app);

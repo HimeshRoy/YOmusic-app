@@ -134,7 +134,7 @@ const Player = () => {
 
           w-full
 
-          h-[75px]
+          h-[82px]
           sm:h-[90px]
 
           bg-black/95
@@ -172,7 +172,8 @@ const Player = () => {
             min-w-0
             sm:min-w-[220px]
 
-            w-[40%]
+            w-[36%]
+            sm:w-[40%]
 
             cursor-pointer
           "
@@ -201,8 +202,8 @@ const Player = () => {
             alt=""
 
             className="
-              w-10
-              h-10
+              w-11
+              h-11
 
               sm:w-14
               sm:h-14
@@ -247,7 +248,8 @@ const Player = () => {
               {
                 currentSong
                   .artists
-                  .primary[0]?.name
+                  ?.primary?.[0]
+                  ?.name
               }
             </p>
 
@@ -276,27 +278,28 @@ const Player = () => {
             className="
               flex
               items-center
+              justify-center
 
-              gap-4
+              gap-3
               sm:gap-6
 
-              mb-1
+              mb-2
+
+              w-full
             "
           >
 
-            {/* PREVIOUS */}
+            {/* MOBILE PREVIOUS */}
             <button
 
               onClick={prevSong}
 
               className="
-                text-zinc-400
-                hover:text-white
+                text-zinc-300
 
-                transition-all
+                text-sm
 
-                text-xs
-                sm:text-base
+                sm:hidden
               "
             >
 
@@ -304,34 +307,25 @@ const Player = () => {
 
             </button>
 
-            {/* SHUFFLE */}
+            {/* DESKTOP PREVIOUS */}
             <button
 
-              onClick={() =>
+              onClick={prevSong}
 
-                setIsShuffle(
-                  !isShuffle
-                )
+              className="
+                hidden
+                sm:block
 
-              }
+                text-zinc-400
+                hover:text-white
 
-              className={`
                 transition-all
 
-                text-xs
-                sm:text-base
-
-                ${
-                  isShuffle
-
-                    ? "text-green-500"
-
-                    : "text-zinc-400"
-                }
-              `}
+                text-base
+              "
             >
 
-              <FaRandom />
+              <FaBackward />
 
             </button>
 
@@ -339,7 +333,7 @@ const Player = () => {
             <motion.button
 
               whileTap={{
-                scale: 0.82,
+                scale: 0.9,
               }}
 
               whileHover={{
@@ -358,15 +352,19 @@ const Player = () => {
                 bg-white
                 text-black
 
-                p-2.5
+                w-10
+                h-10
+
+                sm:w-auto
+                sm:h-auto
+
                 sm:p-4
 
                 rounded-full
 
-                hover:scale-110
-                active:scale-95
-
-                transition-all
+                flex
+                items-center
+                justify-center
 
                 shadow-xl
               "
@@ -376,7 +374,7 @@ const Player = () => {
 
                 <FaPause
                   className="
-                    text-xs
+                    text-sm
                     sm:text-base
                   "
                 />
@@ -385,8 +383,10 @@ const Player = () => {
 
                 <FaPlay
                   className="
-                    text-xs
+                    text-sm
                     sm:text-base
+
+                    ml-[1px]
                   "
                 />
 
@@ -394,89 +394,15 @@ const Player = () => {
 
             </motion.button>
 
-            {/* LOOP */}
-            <button
-
-              onClick={() => {
-
-                if (
-                  loopMode === "off"
-                ) {
-
-                  setLoopMode("all");
-
-                }
-
-                else if (
-                  loopMode === "all"
-                ) {
-
-                  setLoopMode("one");
-
-                }
-
-                else {
-
-                  setLoopMode("off");
-
-                }
-
-              }}
-
-              className={`
-                transition-all
-
-                text-xs
-                sm:text-base
-
-                ${
-                  loopMode !== "off"
-
-                    ? "text-green-500"
-
-                    : "text-zinc-400"
-                }
-              `}
-            >
-
-              <RiRepeat2Fill />
-
-            </button>
-
-            {/* QUEUE */}
-            <button
-
-              onClick={() =>
-                setQueueOpen(true)
-              }
-
-              className="
-                text-zinc-400
-                hover:text-white
-
-                transition-all
-
-                text-xs
-                sm:text-base
-              "
-            >
-
-              <FaListUl />
-
-            </button>
-
             {/* NEXT */}
             <button
 
               onClick={nextSong}
 
               className="
-                text-zinc-400
-                hover:text-white
+                text-zinc-300
 
-                transition-all
-
-                text-xs
+                text-sm
                 sm:text-base
               "
             >
@@ -484,6 +410,113 @@ const Player = () => {
               <FaForward />
 
             </button>
+
+            {/* DESKTOP EXTRA */}
+            <div
+              className="
+                hidden
+                sm:flex
+
+                items-center
+
+                gap-6
+              "
+            >
+
+              {/* SHUFFLE */}
+              <button
+
+                onClick={() =>
+
+                  setIsShuffle(
+                    !isShuffle
+                  )
+
+                }
+
+                className={`
+                  transition-all
+
+                  ${
+                    isShuffle
+
+                      ? "text-green-500"
+
+                      : "text-zinc-400"
+                  }
+                `}
+              >
+
+                <FaRandom />
+
+              </button>
+
+              {/* LOOP */}
+              <button
+
+                onClick={() => {
+
+                  if (
+                    loopMode === "off"
+                  ) {
+
+                    setLoopMode("all");
+
+                  }
+
+                  else if (
+                    loopMode === "all"
+                  ) {
+
+                    setLoopMode("one");
+
+                  }
+
+                  else {
+
+                    setLoopMode("off");
+
+                  }
+
+                }}
+
+                className={`
+                  transition-all
+
+                  ${
+                    loopMode !== "off"
+
+                      ? "text-green-500"
+
+                      : "text-zinc-400"
+                  }
+                `}
+              >
+
+                <RiRepeat2Fill />
+
+              </button>
+
+              {/* QUEUE */}
+              <button
+
+                onClick={() =>
+                  setQueueOpen(true)
+                }
+
+                className="
+                  text-zinc-400
+                  hover:text-white
+
+                  transition-all
+                "
+              >
+
+                <FaListUl />
+
+              </button>
+
+            </div>
 
           </div>
 
@@ -507,7 +540,7 @@ const Player = () => {
 
                 text-zinc-400
 
-                w-[30px]
+                w-[28px]
                 sm:w-[40px]
               "
             >
@@ -548,8 +581,7 @@ const Player = () => {
 
                 cursor-pointer
 
-                h-[2px]
-                sm:h-[3px]
+                h-[3px]
               "
             />
 
@@ -561,7 +593,7 @@ const Player = () => {
 
                 text-zinc-400
 
-                w-[30px]
+                w-[28px]
                 sm:w-[40px]
               "
             >

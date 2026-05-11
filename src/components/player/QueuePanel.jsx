@@ -1,27 +1,11 @@
-import {
-  motion,
-  AnimatePresence,
-} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-import {
-  FaMusic,
-  FaTimes,
-  FaPlay,
-  FaTrash,
-} from "react-icons/fa";
+import { FaMusic, FaTimes, FaPlay, } from "react-icons/fa";
+import { MdOutlineRemoveCircleOutline } from "react-icons/md";
+import { usePlayer } from "../../context/PlayerContext";
 
-import {
-  usePlayer,
-} from "../../context/PlayerContext";
-
-const QueuePanel =
-({
-  open,
-  setOpen,
-}) => {
-
+const QueuePanel = ({ open, setOpen }) => {
   const {
-
     songs,
 
     currentSong,
@@ -29,41 +13,32 @@ const QueuePanel =
     playFromQueue,
 
     removeFromQueue,
-
   } = usePlayer();
 
   return (
-
     <AnimatePresence>
-
       {open && (
-
         <motion.div
-
           initial={{
             y: "100%",
             opacity: 0,
           }}
-
           animate={{
             y: 0,
             opacity: 1,
           }}
-
           exit={{
             y: "100%",
             opacity: 0,
           }}
-
           transition={{
             duration: 0.3,
           }}
-
           className="
             fixed
             inset-0
 
-            z-[9998]
+            z-[10000]
 
             bg-black/70
             backdrop-blur-xl
@@ -73,32 +48,18 @@ const QueuePanel =
             justify-center
           "
         >
-
           {/* PANEL */}
           <motion.div
-
             drag="y"
-
             dragConstraints={{
               top: 0,
               bottom: 300,
             }}
-
-            onDragEnd={(
-              e,
-              info
-            ) => {
-
-              if (
-                info.offset.y > 120
-              ) {
-
+            onDragEnd={(e, info) => {
+              if (info.offset.y > 120) {
                 setOpen(false);
-
               }
-
             }}
-
             className="
               w-full
               max-w-[700px]
@@ -115,7 +76,6 @@ const QueuePanel =
               overflow-hidden
             "
           >
-
             {/* HEADER */}
             <div
               className="
@@ -129,7 +89,6 @@ const QueuePanel =
                 border-zinc-800
               "
             >
-
               <div
                 className="
                   flex
@@ -137,7 +96,6 @@ const QueuePanel =
                   gap-3
                 "
               >
-
                 <FaMusic
                   className="
                     text-green-500
@@ -152,19 +110,11 @@ const QueuePanel =
                 >
                   Queue
                 </h2>
-
               </div>
 
-              <button
-                onClick={() =>
-                  setOpen(false)
-                }
-              >
-
+              <button onClick={() => setOpen(false)}>
                 <FaTimes />
-
               </button>
-
             </div>
 
             {/* SONGS */}
@@ -179,24 +129,15 @@ const QueuePanel =
                 space-y-3
               "
             >
-
-              {songs.map(
-                (song, index) => {
-
-                const isCurrent =
-                  currentSong?.id ===
-                  song.id;
+              {songs.map((song, index) => {
+                const isCurrent = currentSong?.id === song.id;
 
                 return (
-
                   <motion.div
-
                     key={song.id}
-
                     whileHover={{
                       scale: 1.01,
                     }}
-
                     className={`
                       flex
                       items-center
@@ -210,14 +151,11 @@ const QueuePanel =
 
                       ${
                         isCurrent
-
                           ? "bg-green-500/20 border border-green-500"
-
                           : "bg-[#1a1a1a]"
                       }
                     `}
                   >
-
                     {/* LEFT */}
                     <div
                       className="
@@ -231,15 +169,9 @@ const QueuePanel =
                         flex-1
                       "
                     >
-
                       <img
-
-                        src={
-                          song.image[2].url
-                        }
-
+                        src={song.image[2].url}
                         alt=""
-
                         className="
                           w-14
                           h-14
@@ -255,7 +187,6 @@ const QueuePanel =
                           min-w-0
                         "
                       >
-
                         <h3
                           className="
                             truncate
@@ -273,15 +204,9 @@ const QueuePanel =
                             truncate
                           "
                         >
-                          {
-                            song
-                              .artists
-                              .primary[0]?.name
-                          }
+                          {song.artists.primary[0]?.name}
                         </p>
-
                       </div>
-
                     </div>
 
                     {/* ACTIONS */}
@@ -292,57 +217,33 @@ const QueuePanel =
                         gap-3
                       "
                     >
-
                       <button
-
-                        onClick={() =>
-                          playFromQueue(index)
-                        }
-
+                        onClick={() => playFromQueue(index)}
                         className="
                           text-green-500
                         "
                       >
-
                         <FaPlay />
-
                       </button>
 
                       <button
-
-                        onClick={() =>
-                          removeFromQueue(index)
-                        }
-
+                        onClick={() => removeFromQueue(index)}
                         className="
                           text-red-500
                         "
                       >
-
-                        <FaTrash />
-
+                        <MdOutlineRemoveCircleOutline />
                       </button>
-
                     </div>
-
                   </motion.div>
-
                 );
-
               })}
-
             </div>
-
           </motion.div>
-
         </motion.div>
-
       )}
-
     </AnimatePresence>
-
   );
-
 };
 
 export default QueuePanel;

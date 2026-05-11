@@ -1,7 +1,4 @@
-import {
-  motion,
-  AnimatePresence,
-} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import {
   FaPlay,
@@ -9,39 +6,25 @@ import {
   FaForward,
   FaBackward,
   FaHeart,
+  FaRandom,
+  FaListUl,
 } from "react-icons/fa";
 
-import {
-  IoChevronDown,
-} from "react-icons/io5";
+import { IoChevronDown } from "react-icons/io5";
 
-import {
-  HiSpeakerWave,
-} from "react-icons/hi2";
+import { RiRepeat2Fill } from "react-icons/ri";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
-import {
-  Vibrant,
-} from "node-vibrant/browser";
+import { Vibrant } from "node-vibrant/browser";
 
-import {
-  usePlayer,
-} from "../../context/PlayerContext";
+import { usePlayer } from "../../context/PlayerContext";
 
-import {
-  useTheme,
-} from "../../context/ThemeContext";
+import { useTheme } from "../../context/ThemeContext";
 
-import {
-  useFavorites,
-} from "../../context/FavoritesContext";
+import { useFavorites } from "../../context/FavoritesContext";
 
-const FullscreenPlayer =
-({
+const FullscreenPlayer = ({
   open,
   setOpen,
 }) => {
@@ -56,13 +39,18 @@ const FullscreenPlayer =
     currentTime,
     duration,
 
-    volume,
-    setVolume,
-
     seekSong,
 
     nextSong,
     prevSong,
+
+    isShuffle,
+    setIsShuffle,
+
+    loopMode,
+    setLoopMode,
+
+    setQueueOpen,
 
   } = usePlayer();
 
@@ -81,7 +69,7 @@ const FullscreenPlayer =
     setGradient] =
     useState("");
 
-  // EXTRACT COLORS
+  // DYNAMIC COLORS
   useEffect(() => {
 
     if (!currentSong) return;
@@ -206,10 +194,7 @@ const FullscreenPlayer =
             fixed
             inset-0
 
-            z-[9999]
-
-            flex
-            flex-col
+             z-[9999]
 
             md:hidden
 
@@ -233,7 +218,7 @@ const FullscreenPlayer =
           <motion.div
 
             animate={{
-              scale: [1, 1.2, 1],
+              scale: [1, 1.15, 1],
             }}
 
             transition={{
@@ -244,11 +229,11 @@ const FullscreenPlayer =
             className="
               absolute
 
-              -top-40
-              -right-20
+              -top-10
+              -right-10
 
-              w-[350px]
-              h-[350px]
+              w-[250px]
+              h-[250px]
 
               bg-white/10
 
@@ -258,400 +243,491 @@ const FullscreenPlayer =
             "
           />
 
-          {/* TOP */}
+          {/* MAIN */}
           <div
             className="
               relative
               z-10
 
-              flex
-              items-center
-              justify-between
-
-              p-5
-            "
-          >
-
-            <button
-              onClick={() =>
-                setOpen(false)
-              }
-            >
-
-              <IoChevronDown
-                className="
-                  text-3xl
-                  text-white
-                "
-              />
-
-            </button>
-
-            <div
-              className="
-                text-center
-              "
-            >
-
-              <p
-                className="
-                  text-xs
-                  text-white/60
-                "
-              >
-                PLAYING FROM
-              </p>
-
-              <p
-                className="
-                  text-sm
-                  font-semibold
-                "
-              >
-                YOmusic
-              </p>
-
-            </div>
-
-            <button
-
-              onClick={() =>
-                toggleFavorite(
-                  currentSong
-                )
-              }
-            >
-
-              <FaHeart
-                className={`
-                  text-xl
-
-                  ${
-                    isFavorite(
-                      currentSong.id
-                    )
-
-                    ? "text-pink-500"
-
-                    : "text-white"
-                  }
-                `}
-              />
-
-            </button>
-
-          </div>
-
-          {/* CONTENT */}
-          <div
-            className="
-              relative
-              z-10
-
-              flex-1
+              h-full
 
               flex
               flex-col
-              items-center
-              justify-center
 
-              px-6
-              pb-10
+              px-5
+              pb-8
             "
           >
 
-            {/* ALBUM */}
-            <motion.img
-
-              animate={{
-
-                scale:
-                  isPlaying
-                    ? 1
-                    : 0.98,
-
-                y:
-                  isPlaying
-                    ? [0, -10, 0]
-                    : 0,
-
-              }}
-
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-              }}
-
-              src={
-                currentSong
-                  .image[2].url
-              }
-
-              alt=""
-
-              className="
-                w-full
-                max-w-[340px]
-
-                aspect-square
-
-                rounded-[35px]
-
-                object-cover
-
-                shadow-2xl
-              "
-            />
-
-            {/* SONG INFO */}
+            {/* TOP BAR */}
             <div
               className="
-                w-full
+                flex
+                items-center
+                justify-between
 
-                mt-10
+                pt-5
+                pb-3
               "
             >
 
-              <h2
-                className="
-                  text-3xl
-                  font-black
-
-                  truncate
-                "
+              {/* CLOSE */}
+              <button
+                onClick={() =>
+                  setOpen(false)
+                }
               >
-                {currentSong.name}
-              </h2>
 
-              <p
-                className="
-                  text-white/70
+                <IoChevronDown
+                  className="
+                    text-3xl
+                  "
+                />
 
-                  mt-2
+              </button>
 
-                  text-lg
-                "
-              >
-                {
-                  currentSong
-                    .artists
-                    .primary[0]?.name
-                }
-              </p>
-
-            </div>
-
-            {/* SEEK */}
-            <div
-              className="
-                w-full
-
-                mt-10
-              "
-            >
-
-              <input
-
-                type="range"
-
-                min="0"
-
-                max={
-                  duration || 0
-                }
-
-                value={currentTime}
-
-                onChange={(e) =>
-
-                  seekSong(
-                    Number(
-                      e.target.value
-                    )
-                  )
-
-                }
-
-                className="
-                  w-full
-
-                  accent-white
-
-                  h-[4px]
-                "
-              />
-
+              {/* TITLE */}
               <div
                 className="
-                  flex
-                  justify-between
-
-                  mt-3
-
-                  text-sm
-                  text-white/70
+                  text-center
                 "
               >
 
-                <span>
-                  {
-                    formatTime(
-                      currentTime
-                    )
-                  }
-                </span>
+                <p
+                  className="
+                    text-[10px]
+                    text-white/60
 
-                <span>
-                  {
-                    formatTime(
-                      duration
-                    )
-                  }
-                </span>
+                    tracking-[3px]
+                  "
+                >
+                  PLAYING FROM
+                </p>
+
+                <p
+                  className="
+                    text-sm
+                    font-semibold
+                  "
+                >
+                  YOmusic
+                </p>
 
               </div>
 
-            </div>
-
-            {/* CONTROLS */}
-            <div
-              className="
-                flex
-                items-center
-                justify-center
-
-                gap-10
-
-                mt-12
-              "
-            >
-
-              {/* PREV */}
+              {/* FAVORITE */}
               <button
-                onClick={prevSong}
+
+                onClick={() =>
+                  toggleFavorite(
+                    currentSong
+                  )
+                }
               >
 
-                <FaBackward
-                  className="
-                    text-2xl
-                  "
+                <FaHeart
+                  className={`
+                    text-xl
+
+                    transition-all
+
+                    ${
+                      isFavorite(
+                        currentSong.id
+                      )
+
+                      ? "text-pink-500 scale-110"
+
+                      : "text-white"
+                    }
+                  `}
                 />
 
               </button>
 
-              {/* PLAY */}
-              <motion.button
+            </div>
 
-                whileTap={{
-                  scale: 0.9,
+            {/* CENTER */}
+            <div
+              className="
+                flex-1
+
+                flex
+                flex-col
+                justify-center
+              "
+            >
+
+              {/* ALBUM */}
+              <motion.img
+
+                animate={{
+
+                  scale:
+                    isPlaying
+                      ? 1
+                      : 0.98,
+
+                  y:
+                    isPlaying
+                      ? [0, -5, 0]
+                      : 0,
+
                 }}
 
-                whileHover={{
-                  scale: 1.08,
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
                 }}
 
-                onClick={() =>
-
-                  setIsPlaying(
-                    !isPlaying
-                  )
-
+                src={
+                  currentSong.image[2].url
                 }
 
+                alt=""
+
                 className="
-                  bg-white
-                  text-black
+                  w-full
+                  max-w-[280px]
 
-                  p-6
+                  mx-auto
 
-                  rounded-full
+                  aspect-square
+
+                  rounded-[30px]
+
+                  object-cover
 
                   shadow-2xl
                 "
+              />
+
+              {/* SONG INFO */}
+              <div
+                className="
+                  mt-8
+                "
               >
 
-                {isPlaying ? (
-
-                  <FaPause
-                    className="
-                      text-2xl
-                    "
-                  />
-
-                ) : (
-
-                  <FaPlay
-                    className="
-                      text-2xl
-                    "
-                  />
-
-                )}
-
-              </motion.button>
-
-              {/* NEXT */}
-              <button
-                onClick={nextSong}
-              >
-
-                <FaForward
+                <h2
                   className="
-                    text-2xl
+                    text-3xl
+
+                    font-black
+
+                    line-clamp-1
+                  "
+                >
+                  {currentSong.name}
+                </h2>
+
+                <p
+                  className="
+                    text-white/70
+
+                    mt-2
+
+                    text-base
+
+                    line-clamp-1
+                  "
+                >
+                  {
+                    currentSong
+                      .artists
+                      ?.primary?.[0]
+                      ?.name
+                  }
+                </p>
+
+              </div>
+
+              {/* SEEK */}
+              <div
+                className="
+                  mt-8
+                "
+              >
+
+                {/* PROGRESS */}
+                <input
+                  type="range"
+                  min="0"
+                  max={duration || 0}
+                  value={currentTime}
+                  onChange={(e) =>
+                    seekSong(
+                      Number(
+                        e.target.value
+                      )
+                    )
+                  }
+                  className="
+                    w-full
+
+                    accent-white
+
+                    h-[4px]
+
+                    cursor-pointer
                   "
                 />
 
-              </button>
+                {/* TIME + QUEUE */}
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-between
 
-            </div>
+                    mt-3
+                  "
+                >
 
-            {/* VOLUME */}
-            <div
-              className="
-                flex
-                items-center
+                  {/* TIME */}
+                  <div
+                    className="
+                      flex
+                      items-center
 
-                gap-3
+                      gap-2
 
-                w-full
+                      text-xs
+                      text-white/70
+                    "
+                  >
 
-                mt-10
-              "
-            >
+                    <span>
+                      {
+                        formatTime(
+                          currentTime
+                        )
+                      }
+                    </span>
 
-              <HiSpeakerWave
+                    <span>
+                      /
+                    </span>
+
+                    <span>
+                      {
+                        formatTime(
+                          duration
+                        )
+                      }
+                    </span>
+
+                  </div>
+
+                  {/* QUEUE */}
+                  <button
+
+                    onClick={() =>
+                      setQueueOpen(true)
+                    }
+
+                    className="
+                      flex
+                      items-center
+
+                      gap-2
+
+                      text-sm
+
+                      text-white/70
+
+                      hover:text-white
+
+                      transition-all
+                    "
+                  >
+
+                    <FaListUl />
+
+                    Queue
+
+                  </button>
+
+                </div>
+
+              </div>
+
+              {/* CONTROLS */}
+              <div
                 className="
-                  text-xl
+                  flex
+                  items-center
+                  justify-center
+
+                  gap-6
+
+                  mt-12
                 "
-              />
+              >
 
-              <input
+                {/* SHUFFLE */}
+                <button
 
-                type="range"
+                  onClick={() =>
 
-                min="0"
-                max="1"
-
-                step="0.01"
-
-                value={volume}
-
-                onChange={(e) =>
-
-                  setVolume(
-                    Number(
-                      e.target.value
+                    setIsShuffle(
+                      !isShuffle
                     )
-                  )
 
-                }
+                  }
 
-                className="
-                  flex-1
+                  className={`
+                    text-xl
 
-                  accent-white
-                "
-              />
+                    transition-all
+
+                    ${
+                      isShuffle
+
+                        ? "text-green-400"
+
+                        : "text-white/70"
+                    }
+                  `}
+                >
+
+                  <FaRandom />
+
+                </button>
+
+                {/* PREVIOUS */}
+                <button
+                  onClick={prevSong}
+                >
+
+                  <FaBackward
+                    className="
+                      text-2xl
+                    "
+                  />
+
+                </button>
+
+                {/* PLAY */}
+                <motion.button
+
+                  whileTap={{
+                    scale: 0.92,
+                  }}
+
+                  whileHover={{
+                    scale: 1.05,
+                  }}
+
+                  onClick={() =>
+
+                    setIsPlaying(
+                      !isPlaying
+                    )
+
+                  }
+
+                  className="
+                    bg-white
+                    text-black
+
+                    w-20
+                    h-20
+
+                    rounded-full
+
+                    flex
+                    items-center
+                    justify-center
+
+                    shadow-2xl
+                  "
+                >
+
+                  {isPlaying ? (
+
+                    <FaPause
+                      className="
+                        text-2xl
+                      "
+                    />
+
+                  ) : (
+
+                    <FaPlay
+                      className="
+                        text-2xl
+
+                        ml-1
+                      "
+                    />
+
+                  )}
+
+                </motion.button>
+
+                {/* NEXT */}
+                <button
+                  onClick={nextSong}
+                >
+
+                  <FaForward
+                    className="
+                      text-2xl
+                    "
+                  />
+
+                </button>
+
+                {/* LOOP */}
+                <button
+
+                  onClick={() => {
+
+                    if (
+                      loopMode === "off"
+                    ) {
+
+                      setLoopMode("all");
+
+                    }
+
+                    else if (
+                      loopMode === "all"
+                    ) {
+
+                      setLoopMode("one");
+
+                    }
+
+                    else {
+
+                      setLoopMode("off");
+
+                    }
+
+                  }}
+
+                  className={`
+                    text-xl
+
+                    transition-all
+
+                    ${
+                      loopMode !== "off"
+
+                        ? "text-green-400"
+
+                        : "text-white/70"
+                    }
+                  `}
+                >
+
+                  <RiRepeat2Fill />
+
+                </button>
+
+              </div>
 
             </div>
 
